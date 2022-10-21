@@ -22,8 +22,8 @@ public class CustomerActivityController {
     @Autowired
     CustomerActivityRepository customerActivityRepository;
 
-    @RequestMapping(value = "/all")
-    public ResponseEntity<List<CustomerActivity>> findAllEvents(){
+    @RequestMapping(value = "/customerActivities/")
+    public ResponseEntity<List<CustomerActivity>> findAllEvents(Model model){
         var list = customerActivityRepository.findAll();
         return new ResponseEntity<>(list, HttpStatus.ACCEPTED);
     }
