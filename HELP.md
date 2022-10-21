@@ -34,5 +34,9 @@ Service2 topic:
 ## Publishing messages -service2
 ```
 /opt/kafka/bin/kafka-console-producer.sh --topic service2 --bootstrap-server localhost:9092
-{"ecn":"1234","updatedAt":"01-01-2020", "type": "notification", "createdAt": "01-01-2019", "description":"quarterly report"}
+{"ecn":"1234", "type": "notification", "eventInfo": {"updatedAt":"01-01-2020", "createdAt": "01-01-2019"}, "description":"quarterly report"}
 ```
+
+## References
+
+json-path :  https://www.baeldung.com/guide-to-jayway-jsonpath
