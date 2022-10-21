@@ -1,6 +1,7 @@
 package com.wf.wimt.CustomerActivityConsumer.consumer;
 
 import com.google.gson.Gson;
+import com.jayway.jsonpath.JsonPath;
 import com.wf.wimt.CustomerActivityConsumer.model.CustomerActivity;
 import com.wf.wimt.CustomerActivityConsumer.repository.CustomerActivityRepository;
 import lombok.val;
@@ -34,15 +35,16 @@ public class CustomerActivityConsumer {
     @KafkaHandler(isDefault = true)
     public void handle(HashMap jsonMessage, @Header(KafkaHeaders.RECEIVED_TOPIC) String topicName){
         var transformationProperties = fetchServiceTransformationProperties(topicName);
+        String json = new Gson().toJson(jsonMessage);
 
         var context = new Context();
         context.setVariable("activitySource", topicName);
-        context.setVariable("payload", new Gson().toJson(jsonMessage));
+        context.setVariable("payload", json);
 
-        context.setVariable("timestamp", valueFromJsonMessage(transformationProperties, "timestamp", jsonMessage));
-        context.setVariable("customerId", valueFromJsonMessage(transformationProperties, "customerId", jsonMessage));
-        context.setVariable("activityType", valueFromJsonMessage(transformationProperties, "activityType", jsonMessage));
-        context.setVariable("orgName", valueFromJsonMessage(transformationProperties, "orgName", jsonMessage));
+        context.setVariable("timestamp", valueFromJsonMessage(transformationProperties, "timestamp", json));
+        context.setVariable("customerId", valueFromJsonMessage(transformationProperties, "customerId", json));
+        context.setVariable("activityType", valueFromJsonMessage(transformationProperties, "activityType", json));
+        context.setVariable("orgName", valueFromJsonMessage(transformationProperties, "orgName", json));
 
         var templateEngine = new TemplateEngine();
         templateEngine.setTemplateResolver(classLoaderTemplateResolver);
@@ -54,17 +56,16 @@ public class CustomerActivityConsumer {
         all.forEach(System.out::println);
         System.out.println("saved in repo");
     }
-
-    private String valueFromJsonMessage(Properties transformationProperties, String name, HashMap jsonMessage){
+    private String valueFromJsonMessage(Properties transformationProperties, String name, String json){
         String mapping = (String)transformationProperties.get(name);
+        System.out.println("mapping "+ mapping);
         if(mapping.contains(".")){
-            var value = jsonMessage.get(mapping.substring(1));
-            return ObjectUtils.nullSafe((String)value, "");
+            var documentContext = JsonPath.parse(json);
+            return documentContext.read(mapping);
         }else{
             return mapping;
         }
     }
-
     private Properties fetchServiceTransformationProperties(String topicName) {
         Properties properties = new Properties();
         ClassLoader loader = Thread.currentThread().getContextClassLoader();

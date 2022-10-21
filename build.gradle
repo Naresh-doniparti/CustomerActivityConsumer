@@ -20,6 +20,7 @@ dependencies {
 	//implementation 'org.apache.kafka:kafka-clients'
 	implementation 'com.google.code.gson:gson'
 	implementation 'ognl:ognl'
+	implementation 'com.jayway.jsonpath:json-path'
 	implementation 'org.projectlombok:lombok:1.18.22'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
