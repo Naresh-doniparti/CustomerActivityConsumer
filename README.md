@@ -93,5 +93,8 @@ http://localhost:8080/customerActivities
 [{"srsubType":"","createdBy":"","createdDate":"01-01-2020","requestedBy":"1234","requestDescription":"","resolutionDescription":"","activitySource":"WIMT-TOPIC","lobname":"WIMT","srtype":"AttributeUpdate","endDate":"01-01-2020","payload":"","Id":"a631a717-251c-4e65-9542-37c8cd757df8","LOBName":"WIMT","SRType":"AttributeUpdate","SRSubType":"","CreatedBy":"","CreatedDate":"01-01-2020","EndDate":"01-01-2020","RequestedBy":"1234","RequestDescription":"","ResolutionDescription":"","ActivitySource":"WIMT-TOPIC","Payload":""}]
 ```
 
+## App screenshot
+
+
 ## References
 json-path :  https://www.baeldung.com/guide-to-jayway-jsonpath
