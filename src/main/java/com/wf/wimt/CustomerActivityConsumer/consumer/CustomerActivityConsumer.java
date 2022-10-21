@@ -32,32 +32,39 @@ public class CustomerActivityConsumer {
     CustomerActivityRepository customerActivityRepository;
 
     @KafkaHandler(isDefault = true)
-    public void handle(HashMap jsonMessage, @Header(KafkaHeaders.RECEIVED_TOPIC) String topicName){
-        var transformationProperties = fetchServiceTransformationProperties(topicName);
-        String json = new Gson().toJson(jsonMessage);
-
-        var context = new Context();
-        context.setVariable("ActivitySource", topicName);
-        context.setVariable("Payload", json);
-
-        var documentContext = JsonPath.parse(json);
-        context.setVariable("CreatedDate", valueFromJsonMessage(transformationProperties, "CreatedDate", documentContext));
-        context.setVariable("RequestedBy", valueFromJsonMessage(transformationProperties, "RequestedBy", documentContext));
-        context.setVariable("SRType", valueFromJsonMessage(transformationProperties, "SRType", documentContext));
-        context.setVariable("LOBName", valueFromJsonMessage(transformationProperties, "LOBName", documentContext));
-
+    public void handle(HashMap message, @Header(KafkaHeaders.RECEIVED_TOPIC) String topicName){
+        Context templateContext = templateContext(topicName, message);
         var templateEngine = new TemplateEngine();
         templateEngine.setTemplateResolver(classLoaderTemplateResolver);
-        var transformedMessage =  templateEngine.process("customerActivityTemplate", context);
-        System.out.println("transformedMessage -->"+ transformedMessage);
-
+        var consumerActivityMessage =  templateEngine.process("customerActivityTemplate", templateContext);
+        System.out.println("consumerActivityMessage -->"+ consumerActivityMessage);
 //        customerActivityRepository.save(new CustomerActivity("123", "service1", "{}", "01-01-2020", "created", "WIMT"));
 //        var all = customerActivityRepository.findAll();
 //        all.forEach(System.out::println);
 //        System.out.println("saved in repo");
     }
-    private String valueFromJsonMessage(Properties transformationProperties, String name, DocumentContext documentContext){
-        Optional mappingOptional = Optional.ofNullable(transformationProperties.get(name));
+    private Context templateContext(String topicName, HashMap map) {
+        var topicTransformationProperties = topicTransformationProperties(topicName);
+
+        String message = new Gson().toJson(map);
+        var documentContext = JsonPath.parse(message);
+        var context = new Context();
+        context.setVariable("LOBName", valueFromMessage(topicTransformationProperties, "LOBName", documentContext));
+        context.setVariable("SRType", valueFromMessage(topicTransformationProperties, "SRType", documentContext));
+        context.setVariable("SRSubType", valueFromMessage(topicTransformationProperties, "SRSubType", documentContext));
+        context.setVariable("SRStatus", valueFromMessage(topicTransformationProperties, "SRStatus", documentContext));
+        context.setVariable("CreatedDate", valueFromMessage(topicTransformationProperties, "CreatedDate", documentContext));
+        context.setVariable("EndDate", valueFromMessage(topicTransformationProperties, "CreatedDate", documentContext));
+        context.setVariable("RequestedBy", valueFromMessage(topicTransformationProperties, "RequestedBy", documentContext));
+        context.setVariable("RequestDescription", valueFromMessage(topicTransformationProperties, "RequestDescription", documentContext));
+        context.setVariable("ResolutionDescription", valueFromMessage(topicTransformationProperties, "ResolutionDescription", documentContext));
+        context.setVariable("ActivitySource", topicName);
+        context.setVariable("Payload", message);
+        return context;
+    }
+
+    private String valueFromMessage(Properties transformationProperties, String key, DocumentContext documentContext){
+        Optional mappingOptional = Optional.ofNullable(transformationProperties.get(key));
         if(mappingOptional.isEmpty()){
             return "";
         }
@@ -69,7 +76,7 @@ public class CustomerActivityConsumer {
             return mapping;
         }
     }
-    private Properties fetchServiceTransformationProperties(String topicName) {
+    private Properties topicTransformationProperties(String topicName) {
         Properties properties = new Properties();
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
 
