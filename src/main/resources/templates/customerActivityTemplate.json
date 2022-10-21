@@ -1,8 +1,14 @@
 {
-  "customerId": "[(${customerId})]",
-  "activitySource": "[(${activitySource})]",
-  "payload": "[(${payload})]",
-  "timestamp": "[(${timestamp})]",
-  "activityType": "[(${activityType})]",
-  "orgName": "[(${orgName})]"
+  "LOBName": "[(${LOBName})]",
+  "SRType": "[(${SRType})]",
+  "SRSubType": "[(${SRSubType})]",
+  "SRStatus": "[(${SRStatus})]",
+  "CreatedBy": "[(${CreatedBy})]",
+  "CreatedDate": "[(${CreatedDate})]",
+  "EndDate": "[(${EndDate})]",
+  "RequestedBy": "[(${RequestedBy})]",
+  "RequestDescription": "[(${RequestDescription})]",
+  "ResolutionDescription": "[(${ResolutionDescription})]",
+  "ActivitySource": "[(${ActivitySource})]",
+  "Payload": "[(${Payload})]"
 }

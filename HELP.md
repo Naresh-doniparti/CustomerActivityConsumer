@@ -15,28 +15,27 @@ docker ps -a
 
 docker exec -it <<first 3 characters of container name>> sh
 
-Service1 topic:
-/opt/kafka/bin/kafka-topics.sh --create --topic service1 --zookeeper customeractivityconsumer-zookeeper-1:2181 --partitions 1 --replication-factor 1
+Creating WIMT_TOPIC topic:
+/opt/kafka/bin/kafka-topics.sh --create --topic WIMT-TOPIC --zookeeper customeractivityconsumer-zookeeper-1:2181 --partitions 1 --replication-factor 1
 
-Service2 topic:
-/opt/kafka/bin/kafka-topics.sh --create --topic service2 --zookeeper customeractivityconsumer-zookeeper-1:2181 --partitions 1 --replication-factor 1
+Creating CONSUMER_TOPIC topic:
+/opt/kafka/bin/kafka-topics.sh --create --topic CONSUMER-TOPIC --zookeeper customeractivityconsumer-zookeeper-1:2181 --partitions 1 --replication-factor 1
 ```
 
 ## Verifying created topics
 ```
 /opt/kafka/bin/kafka-topics.sh --list --zookeeper customeractivityconsumer-zookeeper-1:2181
 ```
-## Publishing messages -service1
+## Publishing messages on WIMT_TOPIC
 ```
-/opt/kafka/bin/kafka-console-producer.sh --topic service1 --bootstrap-server localhost:9092
+/opt/kafka/bin/kafka-console-producer.sh --topic WIMT-TOPIC --bootstrap-server localhost:9092
 {"xaid":"1234","modifiedAt":"01-01-2020", "action": "AttributeUpdate", "createdAt": "01-01-2019", "includeNetworth": "Y"}
 ```
-## Publishing messages -service2
+## Publishing messages on CONSUMER_TOPIC
 ```
-/opt/kafka/bin/kafka-console-producer.sh --topic service2 --bootstrap-server localhost:9092
+/opt/kafka/bin/kafka-console-producer.sh --topic CONSUMER-TOPIC --bootstrap-server localhost:9092
 {"ecn":"1234", "type": "notification", "eventInfo": {"updatedAt":"01-01-2020", "createdAt": "01-01-2019"}, "description":"quarterly report"}
 ```
 
 ## References
-
 json-path :  https://www.baeldung.com/guide-to-jayway-jsonpath

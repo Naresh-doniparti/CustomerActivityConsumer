@@ -1,10 +1,9 @@
 package com.wf.wimt.CustomerActivityConsumer.consumer;
 
 import com.google.gson.Gson;
+import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
-import com.wf.wimt.CustomerActivityConsumer.model.CustomerActivity;
 import com.wf.wimt.CustomerActivityConsumer.repository.CustomerActivityRepository;
-import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaHandler;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -14,11 +13,11 @@ import org.springframework.stereotype.Component;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
-import org.thymeleaf.util.ObjectUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.Properties;
 
 
@@ -38,29 +37,33 @@ public class CustomerActivityConsumer {
         String json = new Gson().toJson(jsonMessage);
 
         var context = new Context();
-        context.setVariable("activitySource", topicName);
-        context.setVariable("payload", json);
+        context.setVariable("ActivitySource", topicName);
+        context.setVariable("Payload", json);
 
-        context.setVariable("timestamp", valueFromJsonMessage(transformationProperties, "timestamp", json));
-        context.setVariable("customerId", valueFromJsonMessage(transformationProperties, "customerId", json));
-        context.setVariable("activityType", valueFromJsonMessage(transformationProperties, "activityType", json));
-        context.setVariable("orgName", valueFromJsonMessage(transformationProperties, "orgName", json));
+        var documentContext = JsonPath.parse(json);
+        context.setVariable("CreatedDate", valueFromJsonMessage(transformationProperties, "CreatedDate", documentContext));
+        context.setVariable("RequestedBy", valueFromJsonMessage(transformationProperties, "RequestedBy", documentContext));
+        context.setVariable("SRType", valueFromJsonMessage(transformationProperties, "SRType", documentContext));
+        context.setVariable("LOBName", valueFromJsonMessage(transformationProperties, "LOBName", documentContext));
 
         var templateEngine = new TemplateEngine();
         templateEngine.setTemplateResolver(classLoaderTemplateResolver);
         var transformedMessage =  templateEngine.process("customerActivityTemplate", context);
         System.out.println("transformedMessage -->"+ transformedMessage);
 
-        customerActivityRepository.save(new CustomerActivity("123", "service1", "{}", "01-01-2020", "created", "WIMT"));
-        var all = customerActivityRepository.findAll();
-        all.forEach(System.out::println);
-        System.out.println("saved in repo");
+//        customerActivityRepository.save(new CustomerActivity("123", "service1", "{}", "01-01-2020", "created", "WIMT"));
+//        var all = customerActivityRepository.findAll();
+//        all.forEach(System.out::println);
+//        System.out.println("saved in repo");
     }
-    private String valueFromJsonMessage(Properties transformationProperties, String name, String json){
-        String mapping = (String)transformationProperties.get(name);
-        System.out.println("mapping "+ mapping);
+    private String valueFromJsonMessage(Properties transformationProperties, String name, DocumentContext documentContext){
+        Optional mappingOptional = Optional.ofNullable(transformationProperties.get(name));
+        if(mappingOptional.isEmpty()){
+            return "";
+        }
+        var mapping = String.valueOf(mappingOptional.get());
+        System.out.println("mapping found"+ mapping);
         if(mapping.contains(".")){
-            var documentContext = JsonPath.parse(json);
             return documentContext.read(mapping);
         }else{
             return mapping;
@@ -69,7 +72,8 @@ public class CustomerActivityConsumer {
     private Properties fetchServiceTransformationProperties(String topicName) {
         Properties properties = new Properties();
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
-        InputStream stream = loader.getResourceAsStream("transformer/services/"+topicName+"/translation.properties");
+
+        InputStream stream = loader.getResourceAsStream("transformer/topics/" +topicName+"/translation.properties");
         try {
             properties.load(stream);
         } catch (IOException e) {
