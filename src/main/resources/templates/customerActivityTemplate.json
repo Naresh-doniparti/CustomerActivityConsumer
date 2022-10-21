@@ -1,0 +1,8 @@
+{
+  "customerId": "[(${customerId})]",
+  "activitySource": "[(${activitySource})]",
+  "payload": "[(${payload})]",
+  "timestamp": "[(${timestamp})]",
+  "activityType": "[(${activityType})]",
+  "orgName": "[(${orgName})]"
+}

@@ -1,26 +1,33 @@
-# Getting Started
+# How to run
 
-### Reference Documentation
-For further reference, please consider the following sections:
+## Prerequisites
 
-* [Official Gradle documentation](https://docs.gradle.org)
-* [Spring Boot Gradle Plugin Reference Guide](https://docs.spring.io/spring-boot/docs/2.7.4/gradle-plugin/reference/html/)
-* [Create an OCI image](https://docs.spring.io/spring-boot/docs/2.7.4/gradle-plugin/reference/html/#build-image)
-* [Spring Web](https://docs.spring.io/spring-boot/docs/2.7.4/reference/htmlsingle/#web)
-* [Thymeleaf](https://docs.spring.io/spring-boot/docs/2.7.4/reference/htmlsingle/#web.servlet.spring-mvc.template-engines)
-* [Spring Data MongoDB](https://docs.spring.io/spring-boot/docs/2.7.4/reference/htmlsingle/#data.nosql.mongodb)
+Install docker ```brew install -cask docker```
 
-### Guides
-The following guides illustrate how to use some features concretely:
+Install docker compose ```brew install docker-compose```
 
-* [Building a RESTful Web Service](https://spring.io/guides/gs/rest-service/)
-* [Serving Web Content with Spring MVC](https://spring.io/guides/gs/serving-web-content/)
-* [Building REST services with Spring](https://spring.io/guides/tutorials/rest/)
-* [Handling Form Submission](https://spring.io/guides/gs/handling-form-submission/)
-* [Accessing Data with MongoDB](https://spring.io/guides/gs/accessing-data-mongodb/)
+Environment setup - Kafka, Zookeeper ```docker-compose up```
 
-### Additional Links
-These additional references should also help you:
+## Creating Topics for service1 and service2
+```  
+Service1 topic:
+/opt/kafka/bin/kafka-topics.sh --create --topic service1 --zookeeper customeractivityconsumer-zookeeper-1:2181 --partitions 1 --replication-factor 1
 
-* [Gradle Build Scans – insights for your project's build](https://scans.gradle.com#gradle)
+Service2 topic:
+/opt/kafka/bin/kafka-topics.sh --create --topic service2 --zookeeper customeractivityconsumer-zookeeper-1:2181 --partitions 1 --replication-factor 1
+```
 
+## Verifying created topics
+```
+/opt/kafka/bin/kafka-topics.sh --list --zookeeper customeractivityconsumer-zookeeper-1:2181
+```
+## Publishing messages -service1
+```
+/opt/kafka/bin/kafka-console-producer.sh --topic service1 --bootstrap-server localhost:9092
+{"xaid":"1234","modifiedAt":"01-01-2020", "action": "AttributeUpdate", "createdAt": "01-01-2019", "includeNetworth": "Y"}
+```
+## Publishing messages -service2
+```
+/opt/kafka/bin/kafka-console-producer.sh --topic service2 --bootstrap-server localhost:9092
+{"ecn":"1234","updatedAt":"01-01-2020", "type": "notification", "createdAt": "01-01-2019", "description":"quarterly report"}
+```
