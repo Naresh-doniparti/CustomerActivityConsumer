@@ -85,10 +85,5 @@ Message consumed and recorded in the system as:
 }
 ```
 
-<<<<<<< HEAD
-=======
-/opt/kafka/bin/kafka-console-producer.sh --topic WIMT-TOPIC --bootstrap-server localhost:9092 < input.csv
->>>>>>> cecb640 (all events End point, repository save)
-
 ## References
 json-path :  https://www.baeldung.com/guide-to-jayway-jsonpath
