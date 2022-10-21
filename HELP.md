@@ -9,7 +9,7 @@ Install docker compose ```brew install docker-compose```
 Environment setup - Kafka, Zookeeper ```docker-compose up```
 
 
-## Creating Topics for service1 and service2
+## Creating Topics for WIMT and CONSUMER LOBs
 ```  
 docker ps -a 
 
