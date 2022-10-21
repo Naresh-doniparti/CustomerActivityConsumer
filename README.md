@@ -94,7 +94,7 @@ http://localhost:8080/customerActivities
 ```
 
 ## App screenshot
-(https://github.com/Naresh-doniparti/CustomerActivityConsumer/blob/b4a035763e484f280f1896ff3553e674d08822db/IMG-20221021-WA0010.jpg)
+![image](https://github.com/Naresh-doniparti/CustomerActivityConsumer/blob/b4a035763e484f280f1896ff3553e674d08822db/IMG-20221021-WA0010.jpg)
 
 ## References
 json-path :  https://www.baeldung.com/guide-to-jayway-jsonpath
