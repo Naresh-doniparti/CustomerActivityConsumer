@@ -39,7 +39,7 @@ SRType=$.action
 LOBName=WIMT
 
 
-Message recorded in the system as:
+Message consumed and recorded in the system as:
 {
   "LOBName": "WIMT",
   "SRType": "AttributeUpdate",
@@ -68,7 +68,7 @@ SRType=$.type
 LOBName=CONSUMER
 
 
-Message recorded in the system as:
+Message consumed and recorded in the system as:
 {
   "LOBName": "CONSUMER",
   "SRType": "notification",
