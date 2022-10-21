@@ -31,6 +31,14 @@ Creating CONSUMER_TOPIC topic:
 /opt/kafka/bin/kafka-console-producer.sh --topic WIMT-TOPIC --bootstrap-server localhost:9092
 {"xaid":"1234","modifiedAt":"01-01-2020", "action": "AttributeUpdate", "createdAt": "01-01-2019", "includeNetworth": "Y"}
 
+translation.properties for translating LOB message format to CustomerActivity message format
+
+RequestedBy=$.xaid
+CreatedDate=$.modifiedAt
+SRType=$.action
+LOBName=WIMT
+
+
 Message recorded in the system as:
 {
   "LOBName": "WIMT",
@@ -51,6 +59,14 @@ Message recorded in the system as:
 ```
 /opt/kafka/bin/kafka-console-producer.sh --topic CONSUMER-TOPIC --bootstrap-server localhost:9092
 {"ecn":"1234", "type": "notification", "eventInfo": {"updatedAt":"01-01-2020", "createdAt": "01-01-2019"}, "description":"quarterly report"}
+
+translation.properties for translating LOB message format to CustomerActivity message format
+
+RequestedBy=$.ecn
+CreatedDate=$.eventInfo.updatedAt
+SRType=$.type
+LOBName=CONSUMER
+
 
 Message recorded in the system as:
 {
