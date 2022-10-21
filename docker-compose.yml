@@ -12,6 +12,8 @@ services:
       KAFKA_ADVERTISED_HOST_NAME: 127.0.0.1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'false'
+    volumes:
+      - './input.csv:/input.csv'
   mongo_db:
     image: "mongo:4.4.3"
     restart: always

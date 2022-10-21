@@ -1,9 +1,14 @@
 package com.wf.wimt.CustomerActivityConsumer.consumer;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
+import com.wf.wimt.CustomerActivityConsumer.model.CustomerActivity;
 import com.wf.wimt.CustomerActivityConsumer.repository.CustomerActivityRepository;
+import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaHandler;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -19,6 +24,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.UUID;
 
 
 @Component
@@ -38,11 +44,25 @@ public class CustomerActivityConsumer {
         templateEngine.setTemplateResolver(classLoaderTemplateResolver);
         var consumerActivityMessage =  templateEngine.process("customerActivityTemplate", templateContext);
         System.out.println("consumerActivityMessage -->"+ consumerActivityMessage);
-//        customerActivityRepository.save(new CustomerActivity("123", "service1", "{}", "01-01-2020", "created", "WIMT"));
-//        var all = customerActivityRepository.findAll();
-//        all.forEach(System.out::println);
-//        System.out.println("saved in repo");
+        try {
+            save(consumerActivityMessage);
+        } catch (JsonProcessingException e) {
+            System.err.println("error saving the message");
+            throw new RuntimeException(e);
+        }
     }
+
+    private void save(String consumerActivityMessage) throws JsonProcessingException {
+        var objectMapper = new ObjectMapper();
+        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        var customerActivity = objectMapper.readValue(consumerActivityMessage, CustomerActivity.class);
+        customerActivity.setId(UUID.randomUUID());
+        customerActivityRepository.save(customerActivity);
+        var all = customerActivityRepository.findAll();
+        all.forEach(System.out::println);
+        System.out.println("saved in repo");
+    }
+
     private Context templateContext(String topicName, HashMap map) {
         var topicTransformationProperties = topicTransformationProperties(topicName);
 
@@ -59,7 +79,7 @@ public class CustomerActivityConsumer {
         context.setVariable("RequestDescription", valueFromMessage(topicTransformationProperties, "RequestDescription", documentContext));
         context.setVariable("ResolutionDescription", valueFromMessage(topicTransformationProperties, "ResolutionDescription", documentContext));
         context.setVariable("ActivitySource", topicName);
-        context.setVariable("Payload", message);
+        context.setVariable("Payload", "");
         return context;
     }
 
