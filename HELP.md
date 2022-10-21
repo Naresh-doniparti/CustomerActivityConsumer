@@ -8,8 +8,13 @@ Install docker compose ```brew install docker-compose```
 
 Environment setup - Kafka, Zookeeper ```docker-compose up```
 
+
 ## Creating Topics for service1 and service2
 ```  
+docker ps -a 
+
+docker exec -it <<first 3 characters of container name>> sh
+
 Service1 topic:
 /opt/kafka/bin/kafka-topics.sh --create --topic service1 --zookeeper customeractivityconsumer-zookeeper-1:2181 --partitions 1 --replication-factor 1
 
