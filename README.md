@@ -1,4 +1,4 @@
-⁸# How to run
+# How to run
 
 ## Prerequisites
 
