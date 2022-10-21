@@ -6,7 +6,7 @@ Install docker ```brew install -cask docker```
 
 Install docker compose ```brew install docker-compose```
 
-Environment setup - Kafka, Zookeeper ```docker-compose up```
+Environment setup - Kafka, Zookeeper and mongo ```docker-compose up```
 
 
 ## Creating Topics for WIMT and CONSUMER LOBs
